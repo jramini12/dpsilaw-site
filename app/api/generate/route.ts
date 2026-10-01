@@ -1,3 +1,4 @@
+import { HttpError, errorResponse, rateLimiter, readJSON, requireApiKey } from "../_lib/http";
 import { deckPrompt, scenarioPrompt, type Difficulty } from "./prompts";
 
 // Proxy between the iOS app and the Gemini API so the API key never ships in
@@ -16,11 +17,7 @@ const MAX_ITEMS = 30;
 const LANGUAGE_PATTERN = /^[\p{L} ()-]{2,30}$/u;
 const DIFFICULTIES: Difficulty[] = ["Easy", "Medium", "Hard"];
 
-// Best-effort per-IP limit. Instances are reused under Fluid Compute but not
-// shared, so pair this with a Vercel Firewall rate-limit rule on /api/generate.
-const RATE_WINDOW_MS = 10 * 60 * 1000;
-const RATE_MAX_REQUESTS = 10;
-const recentRequests = new Map<string, number[]>();
+const enforceRateLimit = rateLimiter(10, 10 * 60 * 1000);
 
 type GenerateRequest =
   | {
@@ -32,25 +29,10 @@ type GenerateRequest =
     }
   | { kind: "scenario"; topic: string; count: number; difficulty: Difficulty };
 
-class HttpError extends Error {
-  constructor(
-    readonly status: number,
-    readonly code: string,
-    message: string,
-  ) {
-    super(message);
-  }
-}
-
 export async function POST(request: Request) {
   try {
-    const apiKey = process.env.GEMINI_API_KEY;
-    if (!apiKey) {
-      console.error("GEMINI_API_KEY is not set");
-      throw new HttpError(500, "server_misconfigured", "The AI service is not configured.");
-    }
-
-    enforceRateLimit(clientIP(request));
+    const apiKey = requireApiKey();
+    enforceRateLimit(request);
 
     const input = parseRequest(await readJSON(request));
     const prompt =
@@ -62,33 +44,11 @@ export async function POST(request: Request) {
     const result = input.kind === "deck" ? validateDeck(text) : validateScenario(text);
     return Response.json(result, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
-    if (error instanceof HttpError) {
-      return Response.json(
-        { error: { code: error.code, message: error.message } },
-        { status: error.status, headers: { "Cache-Control": "no-store" } },
-      );
-    }
-    console.error("Unexpected generate error", error);
-    return Response.json(
-      { error: { code: "internal", message: "Something went wrong. Please try again." } },
-      { status: 500 },
-    );
+    return errorResponse(error);
   }
 }
 
 // MARK: - Input
-
-async function readJSON(request: Request): Promise<unknown> {
-  const length = Number(request.headers.get("content-length") ?? 0);
-  if (length > 4096) {
-    throw new HttpError(413, "too_large", "Request is too large.");
-  }
-  try {
-    return await request.json();
-  } catch {
-    throw new HttpError(400, "invalid_input", "Request body must be JSON.");
-  }
-}
 
 function parseRequest(body: unknown): GenerateRequest {
   if (typeof body !== "object" || body === null) {
@@ -143,30 +103,6 @@ function language(value: unknown, field: string): string {
     throw new HttpError(400, "invalid_input", `${field} is not a valid language name.`);
   }
   return value.trim();
-}
-
-// MARK: - Rate limiting
-
-function clientIP(request: Request): string {
-  const forwarded =
-    request.headers.get("x-vercel-forwarded-for") ?? request.headers.get("x-forwarded-for");
-  return forwarded?.split(",")[0]?.trim() || "unknown";
-}
-
-function enforceRateLimit(ip: string) {
-  const now = Date.now();
-  const recent = (recentRequests.get(ip) ?? []).filter((t) => now - t < RATE_WINDOW_MS);
-  if (recent.length >= RATE_MAX_REQUESTS) {
-    throw new HttpError(429, "rate_limited", "Too many requests. Please wait a few minutes and try again.");
-  }
-  recent.push(now);
-  recentRequests.set(ip, recent);
-
-  if (recentRequests.size > 5000) {
-    for (const [key, times] of recentRequests) {
-      if (times.every((t) => now - t >= RATE_WINDOW_MS)) recentRequests.delete(key);
-    }
-  }
 }
 
 // MARK: - Gemini

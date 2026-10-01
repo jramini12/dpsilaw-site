@@ -1,9 +1,22 @@
 import type { Metadata } from "next";
 
+const description =
+  "Help, troubleshooting and contact for DPSI Law: Interpreter Prep. Voice quality, AI generation, recording and resetting your data.";
+
 export const metadata: Metadata = {
-  title: "Support | DPSI Law: Interpreter Prep",
-  description:
-    "Help, troubleshooting and contact for DPSI Law: Interpreter Prep. Voice quality, AI generation, recording and resetting your data.",
+  title: "Support",
+  description,
+  alternates: {
+    canonical: "/support",
+  },
+  openGraph: {
+    title: "Support | DPSI Law: Interpreter Prep",
+    description,
+    url: "/support",
+    siteName: "DPSI Law: Interpreter Prep",
+    type: "website",
+    images: "/opengraph-image",
+  },
 };
 
 const faqs = [
@@ -38,7 +51,7 @@ export default function SupportPage() {
     <article className="mx-auto max-w-3xl px-6 py-16 sm:py-20">
       <header className="mb-10">
         <p className="text-xs font-semibold tracking-widest text-teal-700 uppercase">Support</p>
-        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-stone-900">How can we help?</h1>
+        <h1 className="mt-2 text-4xl font-semibold tracking-tight text-balance text-stone-900">How can we help?</h1>
         <p className="mt-4 text-stone-600 leading-relaxed">
           For bug reports, feature requests or general questions, email{" "}
           <a className="text-teal-700 underline underline-offset-2" href="mailto:jramini12@gmail.com">
@@ -55,7 +68,7 @@ export default function SupportPage() {
         </p>
         <a
           href="mailto:jramini12@gmail.com?subject=DPSI%20Law%20support"
-          className="mt-5 inline-flex h-11 items-center rounded-full bg-stone-900 px-5 text-sm font-medium text-white"
+          className="mt-5 inline-flex h-11 items-center rounded-full bg-stone-900 px-5 text-sm font-medium text-white hover:bg-stone-700 transition-colors"
         >
           Send an email
         </a>

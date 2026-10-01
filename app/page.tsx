@@ -49,7 +49,7 @@ export default function Home() {
               <p className="inline-flex items-center gap-2 rounded-full border border-teal-200 bg-white/70 px-3 py-1 text-xs font-medium text-teal-800 mb-6">
                 <span className="h-1.5 w-1.5 rounded-full bg-teal-600" /> Built for the UK DPSI Law option
               </p>
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-stone-900 leading-tight">
+              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-semibold tracking-tight text-stone-900 leading-tight text-balance">
                 Pass the talk-out-loud bits of the DPSI Law exam.
               </h1>
               <p className="mt-6 text-lg text-stone-600 leading-relaxed max-w-2xl">
@@ -58,9 +58,10 @@ export default function Home() {
                 pause, slow down and record yourself interpreting.
               </p>
               <div className="mt-10 flex flex-wrap items-center gap-4">
-                <span className="inline-flex h-12 items-center rounded-full bg-stone-900 px-6 text-sm font-medium text-white">
+                <p className="inline-flex items-center gap-2 rounded-full border border-dashed border-stone-300 bg-stone-100/80 px-4 py-2 text-sm font-medium text-stone-600 cursor-default select-none">
+                  <span aria-hidden className="h-1.5 w-1.5 rounded-full bg-stone-400" />
                   Coming soon to the App Store
-                </span>
+                </p>
                 <a
                   href="#features"
                   className="inline-flex h-12 items-center rounded-full border border-stone-300 bg-white px-6 text-sm font-medium text-stone-900 hover:border-stone-400 transition-colors"
@@ -69,7 +70,7 @@ export default function Home() {
                 </a>
               </div>
               <p className="mt-6 text-xs text-stone-500 max-w-xl">
-                iPhone, iOS 18 or later. Twelve languages supported including English, Farsi, Arabic, French and Spanish.
+                iPhone, iOS 26 or later. Twelve languages supported including English, Farsi, Arabic, French and Spanish.
               </p>
             </div>
             <div className="lg:col-span-5">
@@ -91,7 +92,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section id="features" className="border-t border-stone-200 bg-white">
+      <section id="features" className="scroll-mt-20 border-t border-stone-200 bg-white">
         <div className="mx-auto max-w-6xl px-6 py-20 sm:py-24">
           <div className="max-w-2xl">
             <p className="text-xs font-semibold tracking-widest text-teal-700 uppercase">Inside the app</p>

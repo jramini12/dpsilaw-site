@@ -45,9 +45,9 @@ export default function PrivacyPage() {
           <li>The app does not require an account, sign-in or registration.</li>
           <li>The app does not run third-party analytics or advertising SDKs.</li>
           <li>Your decks, cards, scenarios, recordings and progress are stored on your device.</li>
-          <li>The only outbound network request the app makes is to generate an AI deck or practice scenario, and
-            only when you tap a Generate button. That request goes to our own server, which passes it on to
-            Google Gemini.</li>
+          <li>The app makes network requests only to generate an AI deck or practice scenario (when you tap a
+            Generate button) and to voice practice scripts with natural-sounding voices. Both go to our own server,
+            which passes them on to Google Gemini. Your own recordings never leave your device.</li>
         </ul>
       </Section>
 
@@ -74,7 +74,7 @@ export default function PrivacyPage() {
         </p>
       </Section>
 
-      <Section title="AI generation (Google Gemini)">
+      <Section title="AI generation and voices (Google Gemini)">
         <p>
           The app can generate flashcard decks and practice scenarios using Google Gemini. This feature is
           optional. Nothing is sent unless you tap a Generate button. When you do, the app sends a single request
@@ -92,6 +92,16 @@ export default function PrivacyPage() {
         <p>
           No account, user ID, device identifier or location is included. The generated content is stored on your
           device as a new deck or scenario.
+        </p>
+        <h3>Natural voices</h3>
+        <p>
+          When a practice scenario is played with natural voices (the default), the app sends each line of the
+          script to our endpoint (<code>/api/speech</code>), which forwards it to the Google Gemini API to produce the
+          audio. Each request contains only the text of that script line, the name of the voice chosen for that
+          speaker and a short description of how the line should be delivered (for example, &ldquo;a nervous
+          defendant&rdquo;). The resulting audio is saved on your device so each line is only voiced once. The
+          scenarios that come with the app are pre-recorded and play without any request. You can switch to
+          on-device voices at any time in the player&apos;s Voices settings, in which case no script text is sent.
         </p>
         <p>
           <strong>Please do not type personal information</strong> (such as names, case details or anything about
@@ -131,8 +141,9 @@ export default function PrivacyPage() {
 
       <Section title="Microphone and speech">
         <p>
-          The practice player uses Apple&apos;s on-device <code>AVSpeechSynthesizer</code> to read scenario lines aloud.
-          The app does not use speech recognition. It can record your spoken interpretation through the iPhone
+          The practice player reads scenario lines aloud using natural voices from Google Gemini (see above) or,
+          if you choose, Apple&apos;s on-device voices, which also take over automatically when you are offline. The
+          app does not use speech recognition. It can record your spoken interpretation through the iPhone
           microphone. Microphone access is requested only on first use of the record feature; you can revoke it at
           any time in iOS Settings &rarr; Privacy &amp; Security &rarr; Microphone. Recordings are saved as files in
           the app&apos;s private storage on your device and are never sent to us or to any third party (other than

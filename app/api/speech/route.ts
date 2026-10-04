@@ -99,8 +99,11 @@ async function synthesise(text: string, voice: string, style: string | undefined
       const detail = await response.text().catch(() => "");
       console.error(`TTS ${model} returned ${response.status}: ${detail.slice(0, 300)}`);
 
+      // 429 is usually the model's daily quota; the Lite model has its own,
+      // so fall through to it before giving up.
       if (response.status === 429) {
-        throw new HttpError(429, "rate_limited", "The voice service is busy. Please try again shortly.");
+        lastStatus = 429;
+        break;
       }
       if (response.status === 400) {
         throw new HttpError(400, "invalid_input", "The voice service rejected this line.");
@@ -110,6 +113,9 @@ async function synthesise(text: string, voice: string, style: string | undefined
     }
   }
 
+  if (lastStatus === 429) {
+    throw new HttpError(429, "rate_limited", "The voice service is busy. Please try again later.");
+  }
   throw new HttpError(
     502,
     "upstream_unavailable",

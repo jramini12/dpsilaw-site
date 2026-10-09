@@ -233,7 +233,11 @@ function validateScenario(text: string) {
     .filter((l): l is Record<string, unknown> => typeof l === "object" && l !== null)
     .filter((l) => nonEmpty(l.speaker) && nonEmpty(l.text))
     .slice(0, MAX_ITEMS * 2)
-    .map((l) => ({ speaker: (l.speaker as string).trim(), text: (l.text as string).trim() }));
+    .map((l) => ({
+      speaker: (l.speaker as string).trim(),
+      text: (l.text as string).trim(),
+      ...(l.gender === "male" || l.gender === "female" ? { gender: l.gender } : {}),
+    }));
   if (script.length === 0) {
     throw new HttpError(502, "empty_response", "The AI returned an empty script. Try rephrasing your topic.");
   }

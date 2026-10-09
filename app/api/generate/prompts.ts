@@ -51,6 +51,7 @@ Generate approximately ${lineCount} script lines.
 Requirements:
 - The scenario must be realistic and reflect actual UK legal proceedings, police interviews, court hearings, solicitor consultations, or tribunal settings.
 - Each line must have a "speaker" (e.g., "Judge", "Defence Counsel", "Prosecutor", "Police Officer", "Defendant", "Solicitor", "Clerk", "Witness", "Interpreter", "Magistrate", "Social Worker") and "text" (what they say in English).
+- If the script makes a speaker's gender clear (e.g. "Mr. Khan", "Ms. Counsel", "My Lord", "my client... he"), give every line by that speaker a "gender" of "male" or "female", so the voice matches. Keep it the same for that speaker throughout. Omit "gender" when it is not clear.
 - The dialogue should flow naturally as a real conversation would.
 - For "Easy" difficulty: Use simple, common legal phrases and short sentences.
 - For "Medium" difficulty: Use standard legal terminology with moderate complexity.
@@ -66,6 +67,7 @@ Return ONLY valid JSON in this exact structure:
   "script": [
     {
       "speaker": "The speaker's role",
+      "gender": "male or female (optional)",
       "text": "What they say"
     }
   ]
